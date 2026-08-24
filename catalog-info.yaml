@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: sougen.dev
+  description: sougen.dev ランディングページ (GitHub Pages)
+  annotations:
+    github.com/project-slug: enkunkun/sougen.dev
+spec:
+  type: website
+  lifecycle: production
+  owner: user:default/guest
