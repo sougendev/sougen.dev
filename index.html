@@ -3,17 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="sougen.dev ポータル。blog、iOS アプリ、Web ツール等の入口。">
 <title>sougen.dev</title>
 <style>
-:root { color-scheme: light dark; --bg: #fbfdf2; }
-@media (prefers-color-scheme: dark) { :root { --bg: #14180a; } }
+:root { color-scheme: light dark; --bg: #fbfdf2; --muted: #667; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14180a; --muted: #99a; } }
 body { background: var(--bg); max-width: 46rem; margin: 0 auto; padding: 1rem; }
+h2 { font-size: 1rem; margin-top: 2rem; color: var(--muted); font-weight: normal; }
+li { margin: 0.35rem 0; }
+.note { color: var(--muted); }
 </style>
 </head>
 <body>
 <h1>sougen.dev</h1>
 <ul>
-<li><a href="https://blog.sougen.dev">blog</a></li>
+<li><a href="https://blog.sougen.dev">blog</a> <span class="note">— 技術ブログ</span></li>
+<li><a href="https://apps.sougen.dev">apps</a> <span class="note">— iOS アプリ配布 (AltStore)</span></li>
+<li><a href="https://cat-solver.sougen.dev">cat-solver</a> <span class="note">— ネコ配置パズルソルバー</span></li>
+</ul>
+<h2>misc</h2>
+<ul>
+<li><a href="https://bypassnro.sougen.dev">bypassnro</a> <span class="note">— Windows 11 OOBE bypass</span></li>
+<li><a href="https://age.sougen.dev">age</a> <span class="note">— 年齢早見表</span></li>
 </ul>
 </body>
 </html>
