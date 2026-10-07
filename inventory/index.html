@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 公開製品名は暫定。内部名はRoomQuota。 -->
+<title>タナミ（Tanami）— 一点物を売り続ける人の倉庫管理 | sougen</title>
+<meta name="description" content="タナミ（Tanami）は、自宅や小さな倉庫で一点物を販売し続ける個人・小規模販売者のための在庫・保管管理ツールです。商品の保管場所、収納場所ごとの容量、販売状態をまとめて把握し、出品準備から取り出し・発送までをつなぎます。一般向け提供を準備中です。">
+<link rel="canonical" href="https://sougen.dev/inventory/">
+<meta name="theme-color" content="#f4eee2">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="sougen.dev">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:url" content="https://sougen.dev/inventory/">
+<meta property="og:title" content="タナミ（Tanami）— 一点物を売り続ける人の倉庫管理">
+<meta property="og:description" content="どの棚に、何が、どれだけ入っているか。保管場所・容量・販売状態をまとめて把握し、出品準備から発送までをつなぐ在庫管理ツール。一般向け提供を準備中。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="タナミ（Tanami）— 一点物を売り続ける人の倉庫管理">
+<meta name="twitter:description" content="保管場所・容量・販売状態をまとめて把握し、出品準備から発送までをつなぐ在庫管理ツール。一般向け提供を準備中。">
+<style>
+:root {
+  --paper: #f4eee2;
+  --paper-2: #ece3d2;
+  --card: #fffbf3;
+  --ink: #26231e;
+  --ink-2: #4f4a40;
+  --ink-3: #6b6457;
+  --line: #d8ccb6;
+  --line-2: #c5b699;
+  --green: #2f5b47;
+  --green-2: #3f7a5f;
+  --green-soft: #dfe8dc;
+  --wood: #a9814f;
+  --wood-dark: #7c5a33;
+  --amber: #8f4c0c;
+  --amber-soft: #f6e3c8;
+  --red: #a4442f;
+  --red-soft: #f3d9cf;
+  --blue: #3c5f80;
+  --blue-soft: #dbe5ee;
+  --focus: #1f6fd1;
+  --shadow: 0 1px 0 rgba(60, 45, 20, .06), 0 10px 30px -12px rgba(60, 45, 20, .25);
+  --serif: "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Yu Mincho", "YuMincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
+  --sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo", "Noto Sans JP", "Noto Sans CJK JP", system-ui, sans-serif;
+  --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1d1b17;
+    --paper-2: #24211c;
+    --card: #2a2721;
+    --ink: #f1eadc;
+    --ink-2: #d5cdbd;
+    --ink-3: #b3aa98;
+    --line: #443e34;
+    --line-2: #5a5244;
+    --green: #8cc4a6;
+    --green-2: #a7d6bc;
+    --green-soft: #2b3a31;
+    --wood: #9b7646;
+    --wood-dark: #6d5030;
+    --amber: #e3a35c;
+    --amber-soft: #3c3022;
+    --red: #e69a86;
+    --red-soft: #3d2a24;
+    --blue: #9dbcd9;
+    --blue-soft: #263240;
+    --focus: #7fb4ff;
+    --shadow: 0 1px 0 rgba(0, 0, 0, .3), 0 12px 30px -14px rgba(0, 0, 0, .7);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.85;
+  font-feature-settings: "palt" 0;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+img, svg { display: block; max-width: 100%; }
+a { color: var(--green); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; line-height: 1.45; letter-spacing: .02em; margin: 0; word-break: auto-phrase; overflow-wrap: break-word; text-wrap: balance; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+
+.skip {
+  position: absolute; left: 16px; top: -100px; z-index: 10;
+  background: var(--ink); color: var(--paper); padding: 10px 16px; border-radius: 8px;
+}
+.skip:focus { top: 12px; }
+
+.wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+@media (max-width: 480px) { .wrap { width: calc(100% - 32px); } }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: .5em;
+  font-size: .8125rem; letter-spacing: .12em; color: var(--green); font-weight: 600;
+}
+.eyebrow::before { content: ""; width: 18px; height: 2px; background: currentColor; }
+
+/* ---------- header ---------- */
+.site-header { border-bottom: 1px solid var(--line); }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; flex-wrap: wrap; padding-block: 10px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.brand-name { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; letter-spacing: .03em; }
+.brand-by { font-size: .75rem; color: var(--ink-3); letter-spacing: .06em; }
+.site-nav ul { display: flex; gap: 4px 18px; list-style: none; flex-wrap: wrap; }
+.site-nav a { color: var(--ink-2); text-decoration: none; font-size: .875rem; padding: 6px 2px; }
+.site-nav a:hover { color: var(--green); text-decoration: underline; }
+@media (max-width: 720px) { .site-nav { display: none; } }
+
+/* ---------- hero ---------- */
+.hero { padding: clamp(40px, 7vw, 88px) 0 clamp(48px, 7vw, 96px); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 5vw, 64px); align-items: center; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; } }
+.hero h1 { font-size: clamp(1.9rem, 4.6vw, 3rem); margin-top: 18px; letter-spacing: .03em; }
+.hero h1 .line { display: block; }
+.hero .lead { margin-top: 22px; font-size: clamp(1rem, 1.6vw, 1.0625rem); color: var(--ink-2); max-width: 34em; }
+.hero-meta { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--line-2); border-radius: 999px; padding: 2px 12px;
+  font-size: .8125rem; color: var(--ink-2); background: var(--card);
+}
+.pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); }
+.actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px;
+  padding: 10px 22px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: .9375rem;
+  border: 1.5px solid var(--green); transition: background-color .15s, color .15s;
+}
+.btn-primary { background: var(--green); color: var(--card); }
+.btn-primary:hover { background: var(--green-2); border-color: var(--green-2); text-decoration: none; }
+.btn-ghost { color: var(--green); background: transparent; }
+.btn-ghost:hover { background: var(--green-soft); text-decoration: none; }
+.btn svg { width: 16px; height: 16px; }
+
+/* shelf illustration */
+.shelf-figure { margin: 0; }
+.shelf {
+  position: relative; background: var(--card); border: 1px solid var(--line);
+  border-radius: 14px; padding: 18px 18px 14px; box-shadow: var(--shadow);
+}
+.shelf-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+.shelf-title { font-family: var(--serif); font-weight: 600; font-size: 1rem; }
+.shelf-sub { font-size: .75rem; color: var(--ink-3); }
+.tier { padding: 10px 0 0; }
+.tier + .tier { margin-top: 10px; }
+.tier-label { display: flex; justify-content: space-between; font-size: .75rem; color: var(--ink-3); margin-bottom: 6px; gap: 8px; }
+.tier-label b { color: var(--ink); font-weight: 600; }
+.tier-label .num { font-family: var(--mono); font-size: .75rem; color: var(--ink-2); white-space: nowrap; }
+.tier-bay {
+  display: flex; align-items: flex-end; gap: 6px; height: 74px; padding: 0 8px;
+  border-bottom: 7px solid var(--wood); border-radius: 0 0 2px 2px; position: relative;
+  background: linear-gradient(var(--paper-2), var(--paper-2)) bottom / 100% 100% no-repeat;
+}
+.tier-bay::before, .tier-bay::after { content: ""; position: absolute; bottom: -7px; width: 7px; height: 81px; background: var(--wood-dark); }
+.tier-bay::before { left: -7px; }
+.tier-bay::after { right: -7px; }
+.box {
+  position: relative; flex: 0 0 auto; border-radius: 4px 4px 1px 1px;
+  background: #d9c29b; border: 1px solid rgba(80, 55, 20, .28);
+  display: flex; align-items: flex-start; justify-content: center; padding-top: 6px;
+}
+.box .tag {
+  font-size: .625rem; line-height: 1.3; padding: 1px 5px; border-radius: 3px;
+  background: var(--card); color: var(--ink); border: 1px solid var(--line-2); white-space: nowrap;
+}
+.box.s-listed { background: #b7cdb9; }
+.box.s-sold { background: #e7c08a; }
+.box.s-keep { background: #d9c29b; }
+.box.s-prep { background: #c9cfd6; }
+.box.free { background: transparent; border: 1.5px dashed var(--line-2); align-items: center; padding: 0; }
+.box.free span { font-size: .625rem; color: var(--ink-3); }
+.gauge { margin-top: 8px; height: 6px; border-radius: 999px; background: var(--paper-2); overflow: hidden; border: 1px solid var(--line); }
+.gauge i { display: block; height: 100%; background: var(--green-2); border-radius: inherit; }
+.gauge.warn i { background: var(--amber); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line); font-size: .75rem; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(80, 55, 20, .28); }
+.sample-note {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  font-size: .75rem; color: var(--ink-3);
+}
+.sample-note::before { content: ""; width: 10px; height: 10px; border: 1.5px solid currentColor; border-radius: 2px; }
+.sample-badge {
+  display: inline-block; font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+  color: var(--amber); background: var(--amber-soft); border: 1px solid color-mix(in srgb, var(--amber) 40%, transparent);
+  padding: 2px 10px; border-radius: 6px;
+}
+
+/* ---------- sections ---------- */
+section { scroll-margin-top: 16px; }
+.section { padding: clamp(56px, 8vw, 104px) 0; }
+.section.alt { background: var(--paper-2); border-block: 1px solid var(--line); }
+.section-head { max-width: 46em; margin-bottom: clamp(28px, 4vw, 44px); }
+.section-head h2 { font-size: clamp(1.5rem, 3.2vw, 2.125rem); margin-top: 10px; }
+.section-head p { margin-top: 14px; color: var(--ink-2); }
+
+/* ---------- app mock ---------- */
+.mock-cap { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-bottom: 14px; font-size: .875rem; color: var(--ink-2); }
+.mock {
+  background: var(--card); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+}
+.mock-bar {
+  display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.mock-bar .dots { display: flex; gap: 6px; }
+.mock-bar .dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--line-2); }
+.mock-bar .name { font-size: .8125rem; color: var(--ink-2); font-weight: 600; }
+.mock-bar .crumb { margin-left: auto; font-size: .75rem; color: var(--ink-3); }
+.mock-body { display: grid; grid-template-columns: 260px minmax(0, 1fr); }
+@media (max-width: 860px) { .mock-body { grid-template-columns: 1fr; } }
+.zones { border-right: 1px solid var(--line); padding: 16px; background: color-mix(in srgb, var(--paper) 55%, var(--card)); }
+@media (max-width: 860px) { .zones { border-right: 0; border-bottom: 1px solid var(--line); } }
+.zones h3, .items h3 { font-family: var(--sans); font-size: .75rem; letter-spacing: .1em; color: var(--ink-3); font-weight: 600; margin-bottom: 10px; }
+.zone-list { list-style: none; display: grid; gap: 4px; }
+@media (max-width: 860px) and (min-width: 520px) { .zone-list { grid-template-columns: 1fr 1fr; column-gap: 16px; } }
+.zone { padding: 8px 10px; border-radius: 8px; }
+.zone.is-current { background: var(--green-soft); }
+.zone.grandchild { margin-left: 28px; border-left: 2px solid var(--line); border-radius: 0 8px 8px 0; }
+.zone.child { margin-left: 14px; border-left: 2px solid var(--line); border-radius: 0 8px 8px 0; }
+.zone-row { display: flex; justify-content: space-between; gap: 8px; font-size: .8125rem; }
+.zone-row b { font-weight: 600; }
+.zone-row .num { font-family: var(--mono); font-size: .75rem; color: var(--ink-2); white-space: nowrap; }
+.zone .gauge { margin-top: 5px; height: 5px; }
+.warn-text { color: var(--amber); font-size: .6875rem; font-weight: 600; }
+
+.items { padding: 16px; min-width: 0; }
+.items-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin-bottom: 10px; }
+.items-head h3 { margin: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; line-height: 1.6;
+  padding: 1px 9px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap; font-weight: 600;
+}
+.chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.st-keep { color: var(--ink-2); background: var(--paper-2); border-color: var(--line); }
+.st-prep { color: var(--blue); background: var(--blue-soft); }
+.st-listed { color: var(--green); background: var(--green-soft); }
+.st-sold { color: var(--amber); background: var(--amber-soft); }
+.st-shipped { color: var(--ink-3); background: transparent; border-color: var(--line-2); }
+.filter-chip { font-size: .75rem; padding: 1px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--ink-2); background: var(--card); }
+.filter-chip.on { background: var(--ink); color: var(--card); border-color: var(--ink); }
+
+.item-table { width: 100%; border-collapse: collapse; font-size: .8125rem; }
+.item-table th { text-align: left; font-weight: 600; color: var(--ink-3); font-size: .6875rem; letter-spacing: .08em; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.item-table td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+.item-table tr.focus-row td { background: color-mix(in srgb, var(--amber-soft) 60%, transparent); }
+.item-table .r { text-align: right; font-family: var(--mono); font-size: .75rem; white-space: nowrap; }
+.item-name { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+.thumb { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--line); background: var(--paper-2); display: grid; place-items: center; color: var(--ink-3); }
+.thumb svg { width: 20px; height: 20px; }
+.loc { font-size: .75rem; color: var(--ink-2); white-space: nowrap; }
+.loc::before { content: "▸ "; color: var(--wood); }
+@media (max-width: 640px) {
+  .item-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .item-table, .item-table tbody, .item-table tr, .item-table td { display: block; }
+  .item-table tr { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; }
+  .item-table tr.focus-row { background: color-mix(in srgb, var(--amber-soft) 60%, transparent); }
+  .item-table tr.focus-row td { background: transparent; }
+  .item-table td { border: 0; padding: 0; }
+  .item-table td.c-name { grid-column: 1 / -1; }
+  .item-table td.c-vol { text-align: right; }
+  .item-table td.c-state { grid-column: 1 / -1; }
+}
+
+.detail {
+  margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px;
+}
+@media (max-width: 640px) { .detail { grid-template-columns: 1fr; } }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
+.mock .card { background: var(--paper); }
+.card h4 { margin: 0 0 8px; font-size: .75rem; letter-spacing: .08em; color: var(--ink-3); font-weight: 600; }
+.kv { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; margin: 0; font-size: .8125rem; }
+.kv dt { color: var(--ink-3); }
+.kv dd { margin: 0; }
+.steps-mini { list-style: none; display: grid; gap: 6px; font-size: .8125rem; }
+.steps-mini li { display: flex; align-items: center; gap: 8px; }
+.steps-mini .ck { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; border: 1.5px solid var(--line-2); flex: 0 0 auto; }
+.steps-mini .ck.done { background: var(--green); border-color: var(--green); color: var(--card); }
+.steps-mini .ck svg { width: 11px; height: 11px; }
+.steps-mini .now { font-weight: 600; }
+
+/* ---------- value ---------- */
+.values { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; list-style: none; }
+@media (max-width: 860px) { .values { grid-template-columns: 1fr; } }
+.value { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.value .ic { width: 44px; height: 44px; border-radius: 10px; background: var(--green-soft); color: var(--green); display: grid; place-items: center; }
+.value .ic svg { width: 24px; height: 24px; }
+.value h3 { font-size: 1.25rem; }
+.value p { color: var(--ink-2); font-size: .9375rem; }
+.value .eg { margin-top: auto; padding-top: 12px; border-top: 1px dashed var(--line); font-size: .8125rem; color: var(--ink-3); }
+.value .eg code { font-family: var(--mono); font-size: .8125rem; color: var(--ink-2); }
+
+/* ---------- flow ---------- */
+.flow { list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; counter-reset: step; position: relative; }
+.flow-step { position: relative; padding: 0 14px 0 0; }
+.flow-step .marker { display: flex; align-items: center; gap: 0; margin-bottom: 16px; }
+.flow-step .n {
+  flex: 0 0 auto; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center;
+  background: var(--card); border: 1.5px solid var(--green); color: var(--green); position: relative; z-index: 1;
+}
+.flow-step .n svg { width: 24px; height: 24px; }
+.flow-step .marker::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, var(--line-2) 0 6px, transparent 6px 11px); margin-left: 10px; }
+.flow-step:last-child .marker::after { display: none; }
+.flow-step .k { font-family: var(--mono); font-size: .75rem; color: var(--ink-3); letter-spacing: .08em; }
+.flow-step h3 { font-size: 1.25rem; margin-top: 2px; }
+.flow-step p { margin-top: 8px; font-size: .875rem; color: var(--ink-2); }
+.flow-step .uses { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
+.flow-step .uses li { font-size: .6875rem; padding: 1px 8px; border-radius: 4px; background: var(--card); border: 1px solid var(--line); color: var(--ink-2); }
+@media (max-width: 900px) {
+  .flow { grid-template-columns: 1fr; gap: 0; }
+  .flow-step { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 16px; padding: 0 0 26px; }
+  .flow-step .marker { flex-direction: column; margin: 0; grid-row: 1 / span 4; }
+  .flow-step .marker::after { width: 2px; height: auto; flex: 1; margin: 8px 0 0; background: repeating-linear-gradient(180deg, var(--line-2) 0 6px, transparent 6px 11px); }
+  .flow-step:last-child { padding-bottom: 0; }
+}
+.flow-note { margin-top: 28px; font-size: .875rem; color: var(--ink-3); max-width: 46em; }
+
+/* ---------- features ---------- */
+.feature-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .feature-grid { grid-template-columns: 1fr; } }
+.panel { border-radius: 14px; padding: clamp(20px, 3vw, 30px); background: var(--card); border: 1px solid var(--line); }
+.panel.planned { border: 1.5px dashed var(--line-2); background: transparent; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 16px; }
+.panel-head h3 { font-size: 1.25rem; }
+.tag-now, .tag-plan { font-size: .75rem; font-weight: 600; padding: 2px 10px; border-radius: 6px; letter-spacing: .04em; }
+.tag-now { color: var(--green); background: var(--green-soft); }
+.tag-plan { color: var(--amber); background: var(--amber-soft); }
+.feature-list { list-style: none; display: grid; gap: 14px; }
+.feature-list li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: .9375rem; }
+.feature-list li > svg { width: 18px; height: 18px; margin-top: 6px; color: var(--green); }
+.feature-list b { display: block; font-weight: 600; }
+.feature-list span { color: var(--ink-2); font-size: .875rem; }
+.panel-foot { margin-top: 18px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: .8125rem; color: var(--ink-3); }
+
+.ai-flow { list-style: none; display: grid; gap: 0; margin-top: 4px; }
+.ai-flow li { position: relative; padding: 0 0 18px 30px; }
+.ai-flow li::before { content: ""; position: absolute; left: 6px; top: 10px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--amber); background: var(--paper); }
+.ai-flow li::after { content: ""; position: absolute; left: 11px; top: 24px; bottom: 0; width: 2px; background: var(--line); }
+.ai-flow li:last-child { padding-bottom: 0; }
+.ai-flow li:last-child::after { display: none; }
+.ai-flow li.human::before { border-color: var(--green); background: var(--green); }
+.ai-flow b { display: block; font-weight: 600; font-size: .9375rem; }
+.ai-flow span { font-size: .875rem; color: var(--ink-2); }
+.ai-note { margin-top: 18px; font-size: .875rem; color: var(--ink-2); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+
+/* ---------- status ---------- */
+.status-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .status-grid { grid-template-columns: 1fr; } }
+.status-list { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.status-list > div { display: grid; grid-template-columns: 9em minmax(0, 1fr); gap: 4px 16px; padding: 14px 20px; border-bottom: 1px solid var(--line); }
+.status-list > div:last-child { border-bottom: 0; }
+@media (max-width: 480px) { .status-list > div { grid-template-columns: 1fr; } }
+.status-list dt { font-weight: 600; font-size: .875rem; color: var(--ink-2); }
+.status-list dd { margin: 0; font-size: .9375rem; }
+.status-aside p + p { margin-top: 14px; }
+.status-aside p { color: var(--ink-2); }
+.status-aside .small { font-size: .8125rem; color: var(--ink-3); }
+
+/* ---------- english ---------- */
+.en { border-top: 1px solid var(--line); padding: 36px 0; }
+.en .wrap { display: grid; grid-template-columns: 11em minmax(0, 1fr); gap: 8px 24px; }
+@media (max-width: 720px) { .en .wrap { grid-template-columns: 1fr; } }
+.en h2 { font-family: var(--sans); font-size: .8125rem; letter-spacing: .12em; color: var(--ink-3); font-weight: 600; text-transform: uppercase; }
+.en p { font-size: .875rem; line-height: 1.7; color: var(--ink-2); max-width: 62em; }
+.en p + p { margin-top: 10px; }
+
+/* ---------- footer ---------- */
+.site-footer { background: var(--ink); color: var(--paper); padding: 36px 0 44px; }
+@media (prefers-color-scheme: dark) { .site-footer { background: #11100e; color: var(--ink); } }
+.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px 32px; align-items: flex-end; }
+.site-footer a { color: inherit; }
+.site-footer .brand-name { color: inherit; }
+.site-footer small { display: block; font-size: .8125rem; opacity: .82; margin-top: 4px; }
+.site-footer .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: .875rem; list-style: none; }
+
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">本文へ移動</a>
+
+<!-- 共通アイコン -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-shelf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3v18M20 3v18M4 9h16M4 15h16M4 21h16"/><rect x="6.5" y="5" width="4" height="4" rx=".5"/><rect x="12" y="11" width="6" height="4" rx=".5"/><rect x="7" y="17" width="5" height="4" rx=".5"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 12h18"/><rect x="5.5" y="14" width="9" height="3" rx=".6" fill="currentColor" stroke="none"/><rect x="5.5" y="7" width="13" height="3" rx=".6" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-tag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9z"/><circle cx="8" cy="8" r="1.6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></symbol>
+    <symbol id="i-box" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+    <symbol id="i-hand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V8M20 20V8M4 8h16"/><rect x="8" y="11" width="8" height="6" rx=".5"/><path d="M12 3v5M10 5l2-2 2 2"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h11v10H3zM14 9h4l3 3v4h-7"/><circle cx="7" cy="17.5" r="1.8"/><circle cx="17" cy="17.5" r="1.8"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></symbol>
+    <symbol id="i-lamp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8l3 7H5z"/><path d="M12 11v8M8 20h8"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="12" rx="2"/><circle cx="12" cy="13" r="3.5"/><path d="M8 7l1.5-2.5h5L16 7"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4v16H5zM10 4h4v16h-4zM15.5 4.5l3.5-.8 2.6 15.6-3.5.8z"/></symbol>
+    <symbol id="i-vase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v3c-3 2-4 5-4 8 0 4 3 7 6 7s6-3 6-7c0-3-1-6-4-8V3"/></symbol>
+    <symbol id="i-coat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3l3 3 3-3 5 3v5l-3-1v11H7V10l-3 1V6z"/><path d="M12 6v15"/></symbol>
+    <symbol id="i-disc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/></symbol>
+  </defs>
+</svg>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="タナミ ページの先頭へ">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect x="1" y="1" width="30" height="30" rx="8" fill="var(--green)"/>
+        <path d="M8 7v18M24 7v18M8 13h16M8 19h16M8 25h16" stroke="var(--card)" stroke-width="1.8" stroke-linecap="round"/>
+        <rect x="10.5" y="9" width="5" height="4" rx=".6" fill="#e7c08a"/>
+        <rect x="16.5" y="15" width="6" height="4" rx=".6" fill="#e7c08a"/>
+        <rect x="10.5" y="21" width="4" height="4" rx=".6" fill="#e7c08a"/>
+      </svg>
+      <span>
+        <span class="brand-name">タナミ</span>
+        <span class="brand-by">Tanami · by sougen</span>
+      </span>
+    </a>
+    <nav class="site-nav" aria-label="ページ内">
+      <ul>
+        <li><a href="#preview">画面イメージ</a></li>
+        <li><a href="#value">できること</a></li>
+        <li><a href="#flow">管理の流れ</a></li>
+        <li><a href="#features">機能と開発予定</a></li>
+        <li><a href="#status">提供状況</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ========== HERO ========== -->
+  <section class="hero" id="top" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">一点物を売り続ける人の倉庫管理</span>
+        <h1 id="hero-title">
+          <span class="line">どの棚に、何が、</span>
+          <span class="line">どれだけ入っているか。</span>
+        </h1>
+        <p class="lead">
+          タナミは、自宅や小さな倉庫で一点物を販売し続ける個人・小規模販売者のための在庫管理ツールです。商品の保管場所、収納場所ごとの空き容量、販売状態をひとつの台帳で把握し、出品の準備から売れた商品の取り出し、発送までをつなぎます。
+        </p>
+        <div class="hero-meta">
+          <span class="pill"><span class="dot" aria-hidden="true"></span>一般向け提供を準備中・名称は仮称</span>
+          <span class="pill">運営：sougen</span>
+        </div>
+        <div class="actions">
+          <a class="btn btn-primary" href="#flow">管理の流れを見る
+            <svg aria-hidden="true" focusable="false"><use href="#i-down"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#preview">画面イメージを見る</a>
+        </div>
+      </div>
+
+      <figure class="shelf-figure">
+        <div class="shelf" role="img" aria-label="棚の図。サンプルデータ。棚Aの上段は60リットル中48リットル使用、棚Aの中段は60リットル中57リットル使用で残りわずか、本棚の下段は90センチ中54センチ使用。箱の色は保管中、出品中、売約済みなどの販売状態を表す。">
+          <div class="shelf-head">
+            <span class="shelf-title">倉庫の棚</span>
+            <span class="shelf-sub">収納場所ごとに容量の上限つき</span>
+          </div>
+
+          <div class="tier">
+            <div class="tier-label"><span><b>棚A・上段</b>　雑貨・小物</span><span class="num">48 / 60 L</span></div>
+            <div class="tier-bay">
+              <div class="box s-listed" style="width:22%;height:62px"><span class="tag">花器</span></div>
+              <div class="box s-keep" style="width:16%;height:44px"><span class="tag">缶</span></div>
+              <div class="box s-sold" style="width:24%;height:56px"><span class="tag">ランプ</span></div>
+              <div class="box s-prep" style="width:18%;height:38px"><span class="tag">皿</span></div>
+              <div class="box free" style="width:14%;height:58px"><span>空き</span></div>
+            </div>
+            <div class="gauge" aria-hidden="true"><i style="width:80%"></i></div>
+          </div>
+
+          <div class="tier">
+            <div class="tier-label"><span><b>棚A・中段</b>　カメラ・機材</span><span class="num">57 / 60 L</span></div>
+            <div class="tier-bay">
+              <div class="box s-listed" style="width:28%;height:64px"><span class="tag">カメラ</span></div>
+              <div class="box s-keep" style="width:30%;height:60px"><span class="tag">レンズ箱</span></div>
+              <div class="box s-listed" style="width:20%;height:50px"><span class="tag">三脚</span></div>
+              <div class="box s-keep" style="width:14%;height:66px"><span class="tag">箱</span></div>
+            </div>
+            <div class="gauge warn" aria-hidden="true"><i style="width:95%"></i></div>
+          </div>
+
+          <div class="tier">
+            <div class="tier-label"><span><b>本棚・下段</b>　本・レコード</span><span class="num">54 / 90 cm</span></div>
+            <div class="tier-bay">
+              <div class="box s-keep" style="width:9%;height:60px"><span class="tag">文庫</span></div>
+              <div class="box s-listed" style="width:12%;height:66px"><span class="tag">画集</span></div>
+              <div class="box s-keep" style="width:8%;height:56px"></div>
+              <div class="box s-sold" style="width:14%;height:62px"><span class="tag">EP</span></div>
+              <div class="box s-keep" style="width:10%;height:58px"></div>
+              <div class="box free" style="width:36%;height:62px"><span>空き 36cm</span></div>
+            </div>
+            <div class="gauge" aria-hidden="true"><i style="width:60%"></i></div>
+          </div>
+
+          <div class="legend" aria-hidden="true">
+            <span><i style="background:#d9c29b"></i>保管中</span>
+            <span><i style="background:#c9cfd6"></i>出品準備</span>
+            <span><i style="background:#b7cdb9"></i>出品中</span>
+            <span><i style="background:#e7c08a"></i>売約済み</span>
+          </div>
+        </div>
+        <figcaption class="sample-note">サンプルデータによる画面イメージ（図解）</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ========== PREVIEW ========== -->
+  <section class="section alt" id="preview" aria-labelledby="preview-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">倉庫管理の画面イメージ</span>
+        <h2 id="preview-title">収納場所と商品を、同じ台帳で見る</h2>
+        <p>収納場所の一覧には容量の使い方が、商品の一覧には置き場所と販売状態が並びます。売れた商品がどの棚のどの段にあるかを、探さずに確かめられます。</p>
+      </div>
+
+      <figure style="margin:0">
+        <figcaption class="mock-cap">
+          <span class="sample-badge">サンプルデータによる画面イメージ</span>
+          <span>実際の画面のスクリーンショットではありません。商品・数値はすべて架空です。</span>
+        </figcaption>
+
+        <div class="mock">
+          <div class="mock-bar" aria-hidden="true">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="name">タナミ</span>
+            <span class="crumb">在庫 ／ 倉庫</span>
+          </div>
+          <div class="mock-body">
+            <div class="zones">
+              <h3>収納場所</h3>
+              <ul class="zone-list">
+                <li class="zone">
+                  <div class="zone-row"><b>倉庫</b><span class="num">3 区画</span></div>
+                </li>
+                <li class="zone child">
+                  <div class="zone-row"><b>棚A</b><span class="num">105 / 120 L</span></div>
+                  <div class="gauge" aria-hidden="true"><i style="width:88%"></i></div>
+                </li>
+                <li class="zone grandchild">
+                  <div class="zone-row"><b>上段</b><span class="num">48 / 60 L</span></div>
+                  <div class="gauge" aria-hidden="true"><i style="width:80%"></i></div>
+                </li>
+                <li class="zone grandchild is-current">
+                  <div class="zone-row"><b>中段</b><span class="num">57 / 60 L</span></div>
+                  <div class="gauge warn" aria-hidden="true"><i style="width:95%"></i></div>
+                  <span class="warn-text">残り 3 L</span>
+                </li>
+                <li class="zone child">
+                  <div class="zone-row"><b>衣類ラック</b><span class="num">72 / 120 cm</span></div>
+                  <div class="gauge" aria-hidden="true"><i style="width:60%"></i></div>
+                </li>
+                <li class="zone child">
+                  <div class="zone-row"><b>本棚・下段</b><span class="num">54 / 90 cm</span></div>
+                  <div class="gauge" aria-hidden="true"><i style="width:60%"></i></div>
+                </li>
+                <li class="zone">
+                  <div class="zone-row"><b>梱包資材の箱</b><span class="num">22 / 40 L</span></div>
+                  <div class="gauge" aria-hidden="true"><i style="width:55%"></i></div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="items">
+              <div class="items-head">
+                <h3>商品（倉庫内）</h3>
+                <div class="filters" aria-hidden="true">
+                  <span class="filter-chip on">すべて</span>
+                  <span class="filter-chip">出品中</span>
+                  <span class="filter-chip">売約済み</span>
+                </div>
+              </div>
+              <table class="item-table">
+                <caption class="vh">サンプル商品の一覧。商品名、保管場所、容量、販売状態。</caption>
+                <thead>
+                  <tr><th scope="col">商品</th><th scope="col">保管場所</th><th scope="col" class="r">容量</th><th scope="col">販売状態</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="focus-row">
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-lamp"/></svg></span>真鍮のデスクランプ</span></td>
+                    <td class="c-loc"><span class="loc">棚A・上段</span></td>
+                    <td class="c-vol r">9.0 L</td>
+                    <td class="c-state"><span class="chip st-sold">売約済み・発送待ち</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-camera"/></svg></span>フィルムカメラ（本体のみ）</span></td>
+                    <td class="c-loc"><span class="loc">棚A・中段</span></td>
+                    <td class="c-vol r">2.5 L</td>
+                    <td class="c-state"><span class="chip st-listed">出品中</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-vase"/></svg></span>陶器の一輪挿し</span></td>
+                    <td class="c-loc"><span class="loc">棚A・上段</span></td>
+                    <td class="c-vol r">1.2 L</td>
+                    <td class="c-state"><span class="chip st-prep">出品準備</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-book"/></svg></span>画集 3冊セット</span></td>
+                    <td class="c-loc"><span class="loc">本棚・下段</span></td>
+                    <td class="c-vol r">8.5 cm</td>
+                    <td class="c-state"><span class="chip st-listed">出品中</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-coat"/></svg></span>ウールのジャケット</span></td>
+                    <td class="c-loc"><span class="loc">衣類ラック</span></td>
+                    <td class="c-vol r">6.0 cm</td>
+                    <td class="c-state"><span class="chip st-keep">保管中</span></td>
+                  </tr>
+                  <tr>
+                    <td class="c-name"><span class="item-name"><span class="thumb" aria-hidden="true"><svg><use href="#i-disc"/></svg></span>7インチレコード 5枚</span></td>
+                    <td class="c-loc"><span class="loc">本棚・下段</span></td>
+                    <td class="c-vol r">2.0 cm</td>
+                    <td class="c-state"><span class="chip st-shipped">発送済み</span></td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="detail">
+                <div class="card">
+                  <h4>商品カード：真鍮のデスクランプ</h4>
+                  <dl class="kv">
+                    <dt>保管場所</dt><dd>倉庫 ／ 棚A ／ 上段</dd>
+                    <dt>カテゴリ</dt><dd>照明・インテリア</dd>
+                    <dt>容量</dt><dd>9.0 L（箱入り）</dd>
+                    <dt>販路</dt><dd>オークション</dd>
+                    <dt>検品メモ</dt><dd>点灯確認済み。笠の内側に小さな擦れ。</dd>
+                  </dl>
+                </div>
+                <div class="card">
+                  <h4>この商品の進み具合</h4>
+                  <ol class="steps-mini">
+                    <li><span class="ck done" aria-hidden="true"><svg><use href="#i-check"/></svg></span>登録・写真</li>
+                    <li><span class="ck done" aria-hidden="true"><svg><use href="#i-check"/></svg></span>棚A・上段に保管</li>
+                    <li><span class="ck done" aria-hidden="true"><svg><use href="#i-check"/></svg></span>出品・落札</li>
+                    <li class="now"><span class="ck" aria-hidden="true"></span>棚A・上段から取り出す</li>
+                    <li><span class="ck" aria-hidden="true"></span>配送コードを発行して発送</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ========== VALUE ========== -->
+  <section class="section" id="value" aria-labelledby="value-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">できること</span>
+        <h2 id="value-title">保管・容量・販売状態を、ひとつの台帳に</h2>
+        <p>一点物は同じ商品が二つとありません。「どこに置いたか」「まだ入るか」「いま売っているか」を頭の中で覚えておくのではなく、一品ずつ記録に残します。</p>
+      </div>
+      <ul class="values">
+        <li class="value">
+          <span class="ic" aria-hidden="true"><svg><use href="#i-shelf"/></svg></span>
+          <h3>保管</h3>
+          <p>部屋、棚、段、箱のように、収納場所を入れ子にして登録できます。商品ごとに保管場所を記録しておけば、売れた商品をどこから取り出せばよいかがすぐに分かります。</p>
+          <p class="eg">例：<code>倉庫 ／ 棚A ／ 中段</code></p>
+        </li>
+        <li class="value">
+          <span class="ic" aria-hidden="true"><svg><use href="#i-gauge"/></svg></span>
+          <h3>容量</h3>
+          <p>収納場所ごとに容量の上限を、体積（L）か棚の幅（cm）で決められます。商品の大きさを積み上げて使用量を出すので、仕入れる前に「どこにまだ入るか」を確かめられます。</p>
+          <p class="eg">例：<code>57 / 60 L</code>　<code>54 / 90 cm</code></p>
+        </li>
+        <li class="value">
+          <span class="ic" aria-hidden="true"><svg><use href="#i-tag"/></svg></span>
+          <h3>販売状態</h3>
+          <p>販路ごとの出品記録を商品にひもづけ、下書き・出品中・売却済み・取り消しを管理します。売却額や手数料、送料も残せるので、一品ごとの手取りを後から振り返れます。</p>
+          <p class="eg">例：<code>出品中 → 売却済み</code></p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========== FLOW ========== -->
+  <section class="section alt" id="flow" aria-labelledby="flow-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">管理の流れ</span>
+        <h2 id="flow-title">登録から発送まで、一品の動きを追いかける</h2>
+        <p>商品を登録した時点から、置き場所と状態がずっとついて回ります。出品のたびに情報を集め直したり、発送の前に棚を探し回ったりせずに済みます。</p>
+      </div>
+
+      <ol class="flow">
+        <li class="flow-step">
+          <div class="marker"><span class="n" aria-hidden="true"><svg><use href="#i-plus"/></svg></span></div>
+          <span class="k">STEP 1</span>
+          <h3>登録</h3>
+          <p>名前、カテゴリ、写真、大きさ、仕入れ値を記録します。カテゴリに応じて既定の収納場所が選ばれ、本は ISBN から書誌情報を取り込めます。</p>
+          <ul class="uses"><li>写真</li><li>カテゴリ</li><li>仕入れ情報</li></ul>
+        </li>
+        <li class="flow-step">
+          <div class="marker"><span class="n" aria-hidden="true"><svg><use href="#i-box"/></svg></span></div>
+          <span class="k">STEP 2</span>
+          <h3>保管</h3>
+          <p>棚や箱に置き、その場所を商品に記録します。収納場所の使用量が更新され、上限に近い場所が分かります。</p>
+          <ul class="uses"><li>保管場所</li><li>容量</li></ul>
+        </li>
+        <li class="flow-step">
+          <div class="marker"><span class="n" aria-hidden="true"><svg><use href="#i-list"/></svg></span></div>
+          <span class="k">STEP 3</span>
+          <h3>出品</h3>
+          <p>登録済みの情報をもとに、販路ごとの出品情報を準備します。出品中か、売れたか、取り消したかを商品ごとに記録します。</p>
+          <ul class="uses"><li>販路</li><li>価格</li><li>販売状態</li></ul>
+        </li>
+        <li class="flow-step">
+          <div class="marker"><span class="n" aria-hidden="true"><svg><use href="#i-hand"/></svg></span></div>
+          <span class="k">STEP 4</span>
+          <h3>取り出し</h3>
+          <p>売れた商品の保管場所を商品情報で確かめ、棚から取り出します。取り出した分だけ収納場所に空きが生まれます。</p>
+          <ul class="uses"><li>保管場所</li><li>販売状態</li></ul>
+        </li>
+        <li class="flow-step">
+          <div class="marker"><span class="n" aria-hidden="true"><svg><use href="#i-truck"/></svg></span></div>
+          <span class="k">STEP 5</span>
+          <h3>発送</h3>
+          <p>取引の発送状況を確認し、配送コードの発行や QR コード・ラベルの印刷を手伝います。売却額や送料は販売記録に残ります。</p>
+          <ul class="uses"><li>配送コード</li><li>ラベル</li><li>送料</li></ul>
+        </li>
+      </ol>
+      <p class="flow-note">出品と発送の支援は、現在は一部の販売サービス向けに運営者の環境で動かしている段階です。一般向け提供でどの販路に対応するかは、提供開始の時点でお知らせします。</p>
+    </div>
+  </section>
+
+  <!-- ========== FEATURES ========== -->
+  <section class="section" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">現在の機能と開発予定</span>
+        <h2 id="features-title">いまできることと、これから作るもの</h2>
+        <p>タナミは、運営者自身の販売業務で使いながら開発を続けています。現在の開発版にある機能と、まだ提供していない開発予定の機能を分けて記します。</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>現在の開発版にある機能</h3>
+            <span class="tag-now">開発版で稼働</span>
+          </div>
+          <ul class="feature-list">
+            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><div><b>収納場所と容量の管理</b><span>収納場所を入れ子で登録し、体積（L）か棚の幅（cm）で上限を設定。商品の大きさから使用量を集計します。</span></div></li>
+            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><div><b>商品の登録と保管場所の記録</b><span>カテゴリ、保管場所、大きさ、数量、写真、仕入れ情報を記録。まとめての一括登録や、ISBN からの本の登録にも対応します。</span></div></li>
+            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><div><b>販売記録</b><span>販路ごとの出品価格、状態（下書き・出品中・売却済み・取り消し）、売却額、手数料、送料、利益を商品にひもづけて残します。</span></div></li>
+            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><div><b>出品準備の支援</b><span>販路ごとの出品情報を商品データから準備します。同じ商品の二重出品を、画像の類似などから見つける仕組みもあります。</span></div></li>
+            <li><svg aria-hidden="true" focusable="false"><use href="#i-check"/></svg><div><b>発送の支援</b><span>取引の発送状況を確かめ、配送コードの発行から QR コード・ラベルの印刷までを一続きの手順で進めます。</span></div></li>
+          </ul>
+          <p class="panel-foot">ここに挙げたのは開発版の機能です。外部の販売サービスとの連携は運営者の環境で動かしているもので、一般向け提供でどこまで含めるかは決まっていません。</p>
+        </div>
+
+        <div class="panel planned">
+          <div class="panel-head">
+            <h3>開発予定：出品文の下書きと記載漏れの確認</h3>
+            <span class="tag-plan">開発予定・未提供</span>
+          </div>
+          <p style="color:var(--ink-2);font-size:.9375rem">Claude API を使い、在庫に記録した商品情報と検品メモから出品文の下書きを作る機能を計画しています。サイズや付属品、傷の有無といった書くべき項目が抜けていないかも確かめます。</p>
+          <ol class="ai-flow" style="margin-top:20px">
+            <li><b>確認済みの情報</b><span>登録時に記録した商品情報と、検品で書いたメモ</span></li>
+            <li><b>下書きと指摘</b><span>その情報だけをもとにした出品文の下書きと、記載が抜けている項目の一覧</span></li>
+            <li class="human"><b>出品者が確認して直す</b><span>内容を照らし合わせ、必要なら書き直してから出品する</span></li>
+          </ol>
+          <p class="ai-note">下書きはあくまで出発点で、出品する文章の最終確認は出品者が行う設計です。主役は倉庫管理であり、この機能は在庫に記録した情報を出品作業に生かすための補助と位置づけています。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATUS ========== -->
+  <section class="section alt" id="status" aria-labelledby="status-title">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">提供状況</span>
+        <h2 id="status-title">一般向けの提供を準備しています</h2>
+      </div>
+      <div class="status-grid">
+        <dl class="status-list">
+          <div><dt>現在</dt><dd>運営者の販売業務で使いながら開発中</dd></div>
+          <div><dt>一般向け提供</dt><dd>準備中（時期は未定）</dd></div>
+          <div><dt>料金</dt><dd>未定。有料での提供を検討しています</dd></div>
+          <div><dt>利用の申し込み</dt><dd>現在は受け付けていません</dd></div>
+          <div><dt>外部サービス連携</dt><dd>対応範囲は提供開始時にお知らせします</dd></div>
+        </dl>
+        <div class="status-aside">
+          <p>このページは、タナミがどのような道具を目指しているかを紹介するものです。現時点では、どなたでも登録して使える状態ではありません。</p>
+          <p>提供の準備が整ったら、このページと <a href="https://sougen.dev/">sougen.dev</a> でお知らせします。</p>
+          <p class="small">ページ内に登場するサービス名は各社の商標です。タナミは、それらのサービスの運営会社や Anthropic と提携しているものではありません。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== ENGLISH ========== -->
+  <section class="en" aria-labelledby="en-title" lang="en">
+    <div class="wrap">
+      <h2 id="en-title">In English</h2>
+      <div>
+        <p><strong>Tanami</strong> (タナミ) is an inventory and storage management tool for individuals and small sellers who continuously sell one-of-a-kind items from their home or a small storeroom. It records where each item is stored, tracks how much capacity each shelf, rack or box has left (in liters or centimeters of shelf width), and keeps the sales status of every item, connecting listing preparation, picking and shipping in one workflow. It is built and operated by sougen.</p>
+        <p><strong>Planned, not yet available:</strong> using the Claude API to draft listing text only from item details and inspection notes the seller has already recorded, and to point out missing information such as size, accessories or flaws. The seller reviews and edits every draft before anything is published. Tanami is currently used by its developer while in development; general availability is in preparation, pricing has not been decided, and sign-ups are not open.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <span class="brand-name">タナミ</span>
+      <small>Tanami · 運営：sougen</small>
+    </div>
+    <ul class="links">
+      <li><a href="#top">ページの先頭へ</a></li>
+      <li><a href="https://sougen.dev/">sougen.dev</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>
