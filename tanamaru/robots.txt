@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://tanamaru.sougen.dev/sitemap.xml

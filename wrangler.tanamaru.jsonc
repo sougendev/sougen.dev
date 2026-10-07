@@ -1,0 +1,16 @@
+{
+  "name": "tanamaru",
+  "account_id": "b37f4f8b560ec077d85289f66386f2e4",
+  "compatibility_date": "2026-10-08",
+  "workers_dev": false,
+  "assets": {
+    "directory": "./tanamaru",
+    "not_found_handling": "none"
+  },
+  "routes": [
+    {
+      "pattern": "tanamaru.sougen.dev",
+      "custom_domain": true
+    }
+  ]
+}
