@@ -3,34 +3,97 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="sougen.dev ポータル。blog、iOS アプリ、Web ツール等の入口。">
-<title>sougen.dev</title>
+<meta name="description" content="sougen は2026年9月に開業した個人事業です。個人・小規模販売者向けの在庫・保管管理サービス「タナマル」を開発しています。">
+<link rel="canonical" href="https://sougen.dev/">
+<meta property="og:title" content="sougen — 事業紹介">
+<meta property="og:description" content="個人・小規模販売者の在庫・保管管理を支えるソフトウェアを開発しています。">
+<meta property="og:url" content="https://sougen.dev/">
+<meta property="og:type" content="website">
+<title>sougen — 事業紹介</title>
 <style>
-:root { color-scheme: light dark; --bg: #fbfdf2; --muted: #667; }
-@media (prefers-color-scheme: dark) { :root { --bg: #14180a; --muted: #99a; } }
-body { background: var(--bg); max-width: 46rem; margin: 0 auto; padding: 1rem; }
-h2 { font-size: 1rem; margin-top: 2rem; color: var(--muted); font-weight: normal; }
-li { margin: 0.35rem 0; }
-.note { color: var(--muted); }
+:root { color-scheme: light dark; --bg: #fbfdf2; --text: #242b20; --muted: #596452; --line: #d5ddcc; --accent: #345b32; --card: #f1f5e9; }
+@media (prefers-color-scheme: dark) { :root { --bg: #14180a; --text: #e8eddf; --muted: #aab59d; --line: #39432f; --accent: #b2d6a6; --card: #1e2515; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); max-width: 50rem; margin: 0 auto; padding: 1.5rem; font-family: system-ui, sans-serif; line-height: 1.85; }
+a { color: var(--accent); text-underline-offset: .2em; }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem; border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+.brand { font-size: 1.3rem; font-weight: 700; text-decoration: none; }
+nav { display: flex; gap: 1.2rem; font-size: .9rem; }
+.hero { padding: 3.5rem 0 2rem; }
+.eyebrow, .note { color: var(--muted); }
+h1 { font-size: clamp(1.8rem, 5vw, 2.7rem); line-height: 1.5; margin: .5rem 0 1.3rem; letter-spacing: -.03em; }
+h2 { font-size: 1.35rem; margin: 0 0 1rem; }
+h3 { font-size: 1.1rem; margin: 0; }
+p { margin: .7rem 0; }
+section { margin: 2rem 0; scroll-margin-top: 1rem; }
+.product { background: var(--card); border: 1px solid var(--line); border-radius: 1rem; padding: 1.5rem; }
+.status { color: var(--muted); font-size: .85rem; }
+.product-link { display: inline-block; margin-top: .8rem; font-weight: 600; }
+dl { margin: 0; }
+dl > div { display: grid; grid-template-columns: 8rem 1fr; gap: 1rem; border-bottom: 1px solid var(--line); padding: .8rem 0; }
+dt { color: var(--muted); } dd { margin: 0; }
+.english { border-left: 3px solid var(--line); padding-left: 1.3rem; }
+ul { padding-left: 1.3rem; } li { margin: .4rem 0; }
+footer { margin-top: 3rem; padding: 1.2rem 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+@media (max-width: 420px) { body { padding: 1rem; } .hero { padding-top: 2.5rem; } dl > div { grid-template-columns: 1fr; gap: .1rem; } .product { padding: 1.1rem; } }
 </style>
 </head>
 <body>
-<h1>sougen.dev</h1>
+<header>
+<a class="brand" href="/">sougen</a>
+<nav aria-label="ページ内ナビゲーション"><a href="#product">サービス</a><a href="#about">事業概要</a><a href="#contact">お問い合わせ</a></nav>
+</header>
+<main>
+<div class="hero">
+<p class="eyebrow">Software for everyday operations</p>
+<h1>日々の作業を支える、<br>使い手から生まれるソフトウェア。</h1>
+<p>sougen は、個人・小規模販売者向けのソフトウェアを開発する個人事業です。<br>自身の販売業務で感じた課題をもとに、在庫と保管場所を管理する「タナマル」を開発しています。</p>
+</div>
+<section id="product" aria-labelledby="product-title">
+<h2 id="product-title">開発中のサービス</h2>
+<article class="product">
+<h3>タナマル <span lang="en">/ Tanamaru</span></h3>
+<p class="status">開発中 · 一般向け提供を準備中</p>
+<p>「売れた商品が、どこにあるか」をすぐに確認できる在庫・保管管理サービス。自宅や小さな倉庫で商品を扱う、個人・小規模のフリマ販売者に向けて開発しています。</p>
+<p>商品情報・写真・保管場所・棚や箱の容量・販売状況をまとめて管理し、出品準備から商品の取り出し、発送までの作業を支えます。開発版を自身の販売業務で使用しながら改善しています。</p>
+<p class="note">Claude API を使った出品文の下書き生成を開発予定です。この機能はまだ提供していません。一般向けの提供時期と料金は未定です。</p>
+<a class="product-link" href="https://tanamaru.sougen.dev/">サービス紹介・先行利用の案内 →</a>
+</article>
+</section>
+<section id="about" aria-labelledby="about-title">
+<h2 id="about-title">事業概要</h2>
+<dl>
+<div><dt>事業名</dt><dd>sougen <span lang="en">(Sougen Dev)</span></dd></div>
+<div><dt>事業形態</dt><dd>個人事業</dd></div>
+<div><dt>開業年月</dt><dd>2026年9月</dd></div>
+<div><dt>運営者</dt><dd>sougen</dd></div>
+<div><dt>事業内容</dt><dd>個人・小規模販売者向けソフトウェアの企画・開発</dd></div>
+<div><dt>開発サービス</dt><dd><a href="https://tanamaru.sougen.dev/">タナマル（在庫・保管管理）</a></dd></div>
+</dl>
+</section>
+<section class="english" lang="en" aria-labelledby="english-title">
+<h2 id="english-title">About sougen</h2>
+<p>sougen (Sougen Dev) is an independent software business operating as a sole proprietorship, started in September 2026. The business develops software for individual and small resale sellers.</p>
+<p>Its current product, <a href="https://tanamaru.sougen.dev/">Tanamaru</a>, is an inventory and storage management tool being developed from firsthand selling experience. It connects item records, photos, storage locations, shelf and box capacity, and sales status. The development version is used in the operator's own selling workflow. Public availability and pricing are yet to be determined; early-access interest is being collected.</p>
+<p>A Claude API integration for drafting Japanese listing descriptions is planned and is not yet available.</p>
+</section>
+<section id="contact" aria-labelledby="contact-title">
+<h2 id="contact-title">お問い合わせ <span lang="en">/ Contact</span></h2>
+<p>事業・サービスに関するお問い合わせは、メールでご連絡ください。</p>
+<p><a href="mailto:me@sougen.dev">me@sougen.dev</a></p>
+</section>
+<section aria-labelledby="links-title">
+<h2 id="links-title">その他の開発・発信</h2>
 <ul>
-<li><a href="https://tanamaru.sougen.dev/">タナマル</a> <span class="note">— 在庫・保管管理（先行利用の案内を受付中）</span></li>
-<li><a href="https://blog.sougen.dev">blog</a> <span class="note">— 技術ブログ</span></li>
-<li><a href="https://apps.sougen.dev">apps</a> <span class="note">— iOS アプリ</span>
-  <ul>
-    <li><a href="https://basho.sougen.dev/">basho</a></li>
-    <li>bokashi</li>
-  </ul>
-</li>
-<li><a href="https://cat-solver.sougen.dev">cat-solver</a> <span class="note">— ネコ配置パズルソルバー</span></li>
+<li><a href="https://blog.sougen.dev">技術ブログ</a></li>
+<li><a href="https://apps.sougen.dev">iOS アプリ</a> — <a href="https://basho.sougen.dev/">basho</a> / bokashi</li>
+<li><a href="https://cat-solver.sougen.dev">cat-solver</a> — ネコ配置パズルソルバー</li>
+<li><a href="https://bypassnro.sougen.dev">sysprep</a> — Windows 11 OOBE bypass</li>
+<li><a href="https://age.sougen.dev">age</a> — 年齢早見表</li>
 </ul>
-<h2>misc</h2>
-<ul>
-<li><a href="https://bypassnro.sougen.dev">sysprep</a> <span class="note">— Windows 11 OOBE bypass</span></li>
-<li><a href="https://age.sougen.dev">age</a> <span class="note">— 年齢早見表</span></li>
-</ul>
+</section>
+</main>
+<footer>© 2026 sougen · <a href="mailto:me@sougen.dev">me@sougen.dev</a></footer>
 </body>
 </html>
